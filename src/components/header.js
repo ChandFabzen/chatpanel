@@ -10,8 +10,8 @@ const Nav = function Nav() {
           Support<span> Panel</span>
         </div>
         <div className="nav_button">
-          <Link to='/'>login</Link>
-          <Link to='/'>Signup</Link>
+          <Link to='/login'>login</Link>
+          <Link to='/signup'>Signup</Link>
         </div>
       </nav>
     </header>
