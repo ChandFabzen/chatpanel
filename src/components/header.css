@@ -1,7 +1,7 @@
 .nav{
     width: 100%;
 	height: 60px;
-	background-color: rgb(136 137 141);
+	background-color: rgb(14, 226, 191);
 	display: flex;
 	justify-content: space-evenly;
 	flex-direction: row;
@@ -16,6 +16,7 @@
     position: fixed;
         font-family: cursive;
         font-size: 1.8em;
+		font-weight: 800;
 }
 .nav_logo span{
     color: #e74c3c;
@@ -29,7 +30,7 @@
 .nav_button a {
 	display: inline-block;
 	padding: 10px 20px;
-	background: #e74c3c;
+	background: #ff0000;
 	color: rgb(255, 255, 255);
 	text-decoration: none;
 	margin: 10px 15px 0px 15px;

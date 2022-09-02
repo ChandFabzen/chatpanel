@@ -1,6 +1,9 @@
 import React from "react";
 // import profileImg from '../../public/img1.jpg'
 import '../components/middle.css'
+import SearchIcon from "@mui/icons-material/Search";
+import SendIcon from '@mui/icons-material/Send';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
 
 const Middle = ()=>{
     return(
@@ -27,9 +30,12 @@ const Middle = ()=>{
             <div class="search_chat">
                 <div>
                     <input type="text" placeholder="Search or start new chat"/>
-                    <ion-icon name="search-outline"></ion-icon>
+                    <button type="search_Button"> <SearchIcon /> </button>
                 </div>
             </div>
+
+
+            
             {/* <!-- CHAT LIST --> */}
             <div class="chatlist">
                 <div class="block active">
@@ -42,7 +48,7 @@ const Middle = ()=>{
                             <p class="time">10:56</p>
                         </div>
                         <div class="message_p">
-                            <p>How are you doing?</p>
+                            <p>Token No:</p>
                         </div>
                     </div>
                 </div>
@@ -57,7 +63,7 @@ const Middle = ()=>{
                             <p class="time">12:34</p>
                         </div>
                         <div class="message_p">
-                            <p>I love your youtube videos!</p>
+                            <p>Token No:</p>
                             <b>1</b>
                         </div>
                     </div>
@@ -73,7 +79,7 @@ const Middle = ()=>{
                             <p class="time">Yesterday</p>
                         </div>
                         <div class="message_p">
-                            <p>I just subscribed to your channel</p>
+                            <p>Token No:</p>
                             <b>2</b>
                         </div>
                     </div>
@@ -88,7 +94,7 @@ const Middle = ()=>{
                             <p class="time">Yesterday</p>
                         </div>
                         <div class="message_p">
-                            <p>Hey!</p>
+                            <p>Token No:</p>
                         </div>
                     </div>
                 </div>
@@ -102,7 +108,7 @@ const Middle = ()=>{
                             <p class="time">18/01/2022</p>
                         </div>
                         <div class="message_p">
-                            <p>I'll get back to you</p>
+                            <p>Token No:</p>
                         </div>
                     </div>
                 </div>
@@ -116,7 +122,7 @@ const Middle = ()=>{
                             <p class="time">17/01/2022</p>
                         </div>
                         <div class="message_p">
-                            <p>Congratulations</p>
+                            <p>Token No:</p>
                         </div>
                     </div>
                 </div>
@@ -130,7 +136,7 @@ const Middle = ()=>{
                             <p class="time">15/01/2022</p>
                         </div>
                         <div class="message_p">
-                            <p>Thanks alot</p>
+                            <p>Token No:</p>
                         </div>
                     </div>
                 </div>
@@ -144,7 +150,7 @@ const Middle = ()=>{
                             <p class="time">Yesterday</p>
                         </div>
                         <div class="message_p">
-                            <p>Did you finish the project?</p>
+                            <p>Token No:</p>
                         </div>
                     </div>
                 </div>
@@ -158,7 +164,7 @@ const Middle = ()=>{
                             <p class="time">18/01/2022</p>
                         </div>
                         <div class="message_p">
-                            <p>Nice course</p>
+                            <p>Token No:</p>
                         </div>
                     </div>
                 </div>
@@ -172,7 +178,7 @@ const Middle = ()=>{
                             <p class="time">18/01/2022</p>
                         </div>
                         <div class="message_p">
-                            <p>I'll get back to you</p>
+                            <p>Token No:</p>
                         </div>
                     </div>
                 </div>
@@ -186,7 +192,7 @@ const Middle = ()=>{
                             <p class="time">17/01/2022</p>
                         </div>
                         <div class="message_p">
-                            <p>Congratulations</p>
+                            <p>Token No:</p>
                         </div>
                     </div>
                 </div>
@@ -200,7 +206,7 @@ const Middle = ()=>{
                             <p class="time">15/01/2022</p>
                         </div>
                         <div class="message_p">
-                            <p>Thanks alot</p>
+                            <p>Token No:</p>
                         </div>
                     </div>
                 </div>
@@ -282,9 +288,12 @@ const Middle = ()=>{
             <div class="chat_input">
                 <ion-icon name="happy-outline"></ion-icon>
                 {/* <!-- <ion-icon name="happy-outline"></ion-icon> --> */}
+                <button type="attach_button"> <AttachFileIcon /> </button>
                 <input type="text" placeholder="Type a message"/>
-                <ion-icon name="mic"></ion-icon>
+                <button type="send_button"> <SendIcon /> </button>
             </div>
+          
+                 
         </div>
     </div>
     )
