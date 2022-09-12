@@ -1,5 +1,6 @@
+
 .box{
-    width: 300px;
+    width: 350px;
     padding: 40px;
     position: absolute;
     top: 50%;
@@ -29,7 +30,12 @@ border-radius:24px ;
 transition: 0.25s;
 }
 
-
+.box button[type='loginbutton']{
+  margin-bottom: 10px;
+}
+.box button[type='signupbutton']{
+    margin-bottom: 10px;
+  }
 .box button{
     border: 0;
     background: none;
@@ -50,3 +56,28 @@ transition: 0.25s;
 .box .button a:hover{
     color: #2ecc71;
 }
+
+.box .errorMsg {
+    color: red;
+    font-size: 16px;
+  }
+
+.btnContainer p {
+    margin: 14px 0 0 0;
+    text-align: center;
+    margin-right: 10px;
+    color: #fff;
+  }
+  
+.btnContainer span {
+    color: yellow;
+    letter-spacing: 0.5px;
+    margin-left: 5px;
+    cursor: pointer;
+    transition: all 400ms ease-in-out;
+  }
+  
+  .btnContainer p span:hover {
+    color: red;
+  }
+  

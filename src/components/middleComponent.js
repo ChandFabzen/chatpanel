@@ -1,302 +1,317 @@
-import React from "react";
-// import profileImg from '../../public/img1.jpg'
+import React, { useState } from "react";
 import '../components/middle.css'
-import SearchIcon from "@mui/icons-material/Search";
-import SendIcon from '@mui/icons-material/Send';
-import AttachFileIcon from '@mui/icons-material/AttachFile';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEllipsisVertical, faSearch, faPaperclip, faFaceSmile, faPaperPlane,faSadCry } from '@fortawesome/free-solid-svg-icons'
+import { db } from "../services/firebase";
+import { get, query, onValue } from "firebase/database"
 
-const Middle = ()=>{
-    return(
-        <div class="container">
-        <div class="leftSide">
-            {/* Header */}
-            <div class="header">
-                <div class="userimg">
-                    {/* <img src={profileImg} alt="" class="cover"/> */}
+
+
+const Middle = () => {
+
+    // Search Chat
+    const [userName , setUserName] = useState('')
+    const [user , setUser] = useState(null)
+    const [err , setErr] = useState(false)
+
+    const handleSearch = async ()=>{
+        let result = await fetch('https://fir-realtimemessaging-17af2-default-rtdb.firebaseio.com/',{
+            method:"get",
+            headers:{
+                'Content-Type':'application/json'
+            }
+        });
+      console.log(result)
+    }
+
+    const handleKey = e=>{
+        e.code === 'Enter' && handleSearch()
+    }
+
+    return (
+        <div className="container">
+            <div className="leftSide">
+                {/* Header */}
+                <div className="header">
+                    <div className="userimg">
+                        <img src={require('../image/img2.jpg')} alt="" className="cover" />
+                    </div>
+                    <ul className="nav_icons">
+                        <li>
+                            <FontAwesomeIcon icon={faSadCry} />
+                        </li>
+                        <li>
+                            <FontAwesomeIcon icon={faEllipsisVertical} />
+                        </li>
+                    </ul>
                 </div>
-                <ul class="nav_icons">
-                    <li>
-                        <ion-icon name="scan-circle-outline"></ion-icon>
-                    </li>
-                    <li>
-                        <ion-icon name="chatbox"></ion-icon>
-                    </li>
-                    <li>
-                        <ion-icon name="ellipsis-vertical"></ion-icon>
-                    </li>
-                </ul>
+                {/* <!-- Search Chat --> */}
+                <div className="search_chat">
+                    <div>
+                        <input type="text" placeholder="Search or start new chat" onKeyDown={handleKey} onChange={e=>setUserName(e.target.value)}/>
+                        <FontAwesomeIcon icon={faSearch} />
+                    </div>
+                </div>
+
+
+
+                {/* <!-- CHAT LIST --> */}
+                <div className="chatlist">
+                    <div className="block active">
+                        <div className="imgBox">
+                            <img src={require('../image/img1.jpg')} alt="" className="cover" />
+                        </div>
+                        <div className="details">
+                            <div className="listHead">
+                                <h4>Jhon Doe</h4>
+                                <p className="time">10:56</p>
+                            </div>
+                            <div className="message_p">
+                                <p>Token No:</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="block unread">
+                        <div className="imgBox">
+                            <img src={require('../image/img3.jpg')} alt="" className="cover" />
+                        </div>
+                        <div className="details">
+                            <div className="listHead">
+                                <h4>Andre</h4>
+                                <p className="time">12:34</p>
+                            </div>
+                            <div className="message_p">
+                                <p>Token No:</p>
+                                <b>1</b>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="block unread">
+                        <div className="imgBox">
+                            <img src={require('../image/img4.jpg')} alt="" className="cover" />
+                        </div>
+                        <div className="details">
+                            <div className="listHead">
+                                <h4>Olivia</h4>
+                                <p className="time">Yesterday</p>
+                            </div>
+                            <div className="message_p">
+                                <p>Token No:</p>
+                                <b>2</b>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="block">
+                        <div className="imgBox">
+                            <img src={require('../image/img5.jpg')} alt="" className="cover" />
+                        </div>
+                        <div className="details">
+                            <div className="listHead">
+                                <h4>Parker</h4>
+                                <p className="time">Yesterday</p>
+                            </div>
+                            <div className="message_p">
+                                <p>Token No:</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="block">
+                        <div className="imgBox">
+                            <img src={require('../image/img6.jpg')} alt="" className="cover" />
+                        </div>
+                        <div className="details">
+                            <div className="listHead">
+                                <h4>Zoey</h4>
+                                <p className="time">18/01/2022</p>
+                            </div>
+                            <div className="message_p">
+                                <p>Token No:</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="block">
+                        <div className="imgBox">
+                            <img src={require('../image/img7.jpg')} alt="" className="cover" />
+                        </div>
+                        <div className="details">
+                            <div className="listHead">
+                                <h4>Josh</h4>
+                                <p className="time">17/01/2022</p>
+                            </div>
+                            <div className="message_p">
+                                <p>Token No:</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="block">
+                        <div className="imgBox">
+                            <img src={require('../image/img8.jpg')} alt="" className="cover" />
+                        </div>
+                        <div className="details">
+                            <div className="listHead">
+                                <h4>Dian</h4>
+                                <p className="time">15/01/2022</p>
+                            </div>
+                            <div className="message_p">
+                                <p>Token No:</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="block">
+                        <div className="imgBox">
+                            <img src={require('../image/img9.jpg')} alt="" className="cover" />
+                        </div>
+                        <div className="details">
+                            <div className="listHead">
+                                <h4>Sam</h4>
+                                <p className="time">Yesterday</p>
+                            </div>
+                            <div className="message_p">
+                                <p>Token No:</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="block">
+                        <div className="imgBox">
+                            <img src={require('../image/img3.jpg')} alt="" className="cover" />
+                        </div>
+                        <div className="details">
+                            <div className="listHead">
+                                <h4>Junior</h4>
+                                <p className="time">18/01/2022</p>
+                            </div>
+                            <div className="message_p">
+                                <p>Token No:</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="block">
+                        <div className="imgBox">
+                            <img src={require('../image/img6.jpg')} alt="" className="cover" />
+                        </div>
+                        <div className="details">
+                            <div className="listHead">
+                                <h4>Zoey</h4>
+                                <p className="time">18/01/2022</p>
+                            </div>
+                            <div className="message_p">
+                                <p>Token No:</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="block">
+                        <div className="imgBox">
+                            {/* <img src={profileImg} className="cover" alt=""/> */}
+                        </div>
+                        <div className="details">
+                            <div className="listHead">
+                                <h4>Josh</h4>
+                                <p className="time">17/01/2022</p>
+                            </div>
+                            <div className="message_p">
+                                <p>Token No:</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="block">
+                        <div className="imgBox">
+                            {/* <img src={profileImg} className="cover" alt=""/> */}
+                        </div>
+                        <div className="details">
+                            <div className="listHead">
+                                <h4>Dian</h4>
+                                <p className="time">15/01/2022</p>
+                            </div>
+                            <div className="message_p">
+                                <p>Token No:</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            {/* <!-- Search Chat --> */}
-            <div class="search_chat">
-                <div>
-                    <input type="text" placeholder="Search or start new chat"/>
-                    <button type="search_Button"> <SearchIcon /> </button>
-                </div>
-            </div>
-
-
-            
-            {/* <!-- CHAT LIST --> */}
-            <div class="chatlist">
-                <div class="block active">
-                    <div class="imgBox">
-                        {/* <img src={profileImg} class="cover" alt=""/> */}
-                    </div>
-                    <div class="details">
-                        <div class="listHead">
-                            <h4>Jhon Doe</h4>
-                            <p class="time">10:56</p>
+            <div className="rightSide">
+                <div className="header">
+                    <div className="imgText">
+                        <div className="userimg">
+                            <img src={require('../image/img6.jpg')} alt="" className="cover" />
                         </div>
-                        <div class="message_p">
-                            <p>Token No:</p>
-                        </div>
+                        <h4>Qazi <br /><span>online</span></h4>
                     </div>
+                    <ul className="nav_icons">
+                        <li>
+                            <FontAwesomeIcon icon={faEllipsisVertical} />
+                        </li>
+                    </ul>
                 </div>
 
-                <div class="block unread">
-                    <div class="imgBox">
-                        {/* <img src={profileImg} class="cover" alt=""/> */}
+                {/* <!-- CHAT-BOX --> */}
+                <div className="chatbox">
+                    <div className="message my_msg">
+                        <p>Hi <br /><span>12:18</span></p>
                     </div>
-                    <div class="details">
-                        <div class="listHead">
-                            <h4>Andre</h4>
-                            <p class="time">12:34</p>
-                        </div>
-                        <div class="message_p">
-                            <p>Token No:</p>
-                            <b>1</b>
-                        </div>
+                    <div className="message friend_msg">
+                        <p>Hey <br /><span>12:18</span></p>
+                    </div>
+                    <div className="message my_msg">
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. <br /><span>12:15</span></p>
+                    </div>
+                    <div className="message friend_msg">
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. <br /><span>12:15</span></p>
+                    </div>
+                    <div className="message my_msg">
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Lorem ipsum dolor sit amet consectetur
+                            adipisicing elit. Eaque aliquid fugiat accusamus dolore qui vitae ratione optio sunt
+                            <br /><span>12:15</span></p>
+                    </div>
+                    <div className="message friend_msg">
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. <br /><span>12:15</span></p>
+                    </div>
+                    <div className="message my_msg">
+                        <p>Lorem ipsum dolor sit amet consectetur <br /><span>12:15</span></p>
+                    </div>
+                    <div className="message friend_msg">
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.<br /><span>12:15</span></p>
+                    </div>
+                    <div className="message my_msg">
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.<br /><span>12:15</span></p>
+                    </div>
+                    <div className="message friend_msg">
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.<br /><span>12:15</span></p>
+                    </div>
+                    <div className="message my_msg">
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.<br /><span>12:15</span></p>
+                    </div>
+                    <div className="message friend_msg">
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.<br /><span>12:15</span></p>
+                    </div>
+                    <div className="message my_msg">
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.<br /><span>12:15</span></p>
+                    </div>
+                    <div className="message friend_msg">
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.<br /><span>12:15</span></p>
+                    </div>
+                    <div className="message my_msg">
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.<br /><span>12:15</span></p>
+                    </div>
+                    <div className="message friend_msg">
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.<br /><span>12:15</span></p>
                     </div>
                 </div>
 
-                <div class="block unread">
-                    <div class="imgBox">
-                        {/* <img src={profileImg} class="cover" alt=""/> */}
-                    </div>
-                    <div class="details">
-                        <div class="listHead">
-                            <h4>Olivia</h4>
-                            <p class="time">Yesterday</p>
-                        </div>
-                        <div class="message_p">
-                            <p>Token No:</p>
-                            <b>2</b>
-                        </div>
-                    </div>
+                {/* <!-- CHAT INPUT --> */}
+                <div className="chat_input">
+                    <FontAwesomeIcon icon={faPaperclip} />
+                    <FontAwesomeIcon icon={faFaceSmile} />
+                    <ion-icon name="happy-outline"></ion-icon>
+                    <input type="text" placeholder="Type a message" />
+                    <FontAwesomeIcon icon={faPaperPlane} />
                 </div>
-                <div class="block">
-                    <div class="imgBox">
-                        {/* <img src={profileImg} class="cover" alt=""/> */}
-                    </div>
-                    <div class="details">
-                        <div class="listHead">
-                            <h4>Parker</h4>
-                            <p class="time">Yesterday</p>
-                        </div>
-                        <div class="message_p">
-                            <p>Token No:</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="block">
-                    <div class="imgBox">
-                        {/* <img src={profileImg} class="cover" alt=""/> */}
-                    </div>
-                    <div class="details">
-                        <div class="listHead">
-                            <h4>Zoey</h4>
-                            <p class="time">18/01/2022</p>
-                        </div>
-                        <div class="message_p">
-                            <p>Token No:</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="block">
-                    <div class="imgBox">
-                        {/* <img src={profileImg} class="cover" alt=""/> */}
-                    </div>
-                    <div class="details">
-                        <div class="listHead">
-                            <h4>Josh</h4>
-                            <p class="time">17/01/2022</p>
-                        </div>
-                        <div class="message_p">
-                            <p>Token No:</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="block">
-                    <div class="imgBox">
-                        {/* <img src={profileImg} class="cover" alt=""/> */}
-                    </div>
-                    <div class="details">
-                        <div class="listHead">
-                            <h4>Dian</h4>
-                            <p class="time">15/01/2022</p>
-                        </div>
-                        <div class="message_p">
-                            <p>Token No:</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="block">
-                    <div class="imgBox">
-                        {/* <img src={profileImg} class="cover" alt=""/> */}
-                    </div>
-                    <div class="details">
-                        <div class="listHead">
-                            <h4>Sam</h4>
-                            <p class="time">Yesterday</p>
-                        </div>
-                        <div class="message_p">
-                            <p>Token No:</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="block">
-                    <div class="imgBox">
-                        {/* <img src={profileImg} class="cover" alt=""/> */}
-                    </div>
-                    <div class="details">
-                        <div class="listHead">
-                            <h4>Junior</h4>
-                            <p class="time">18/01/2022</p>
-                        </div>
-                        <div class="message_p">
-                            <p>Token No:</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="block">
-                    <div class="imgBox">
-                        {/* <img src={profileImg} class="cover" alt=""/> */}
-                    </div>
-                    <div class="details">
-                        <div class="listHead">
-                            <h4>Zoey</h4>
-                            <p class="time">18/01/2022</p>
-                        </div>
-                        <div class="message_p">
-                            <p>Token No:</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="block">
-                    <div class="imgBox">
-                        {/* <img src={profileImg} class="cover" alt=""/> */}
-                    </div>
-                    <div class="details">
-                        <div class="listHead">
-                            <h4>Josh</h4>
-                            <p class="time">17/01/2022</p>
-                        </div>
-                        <div class="message_p">
-                            <p>Token No:</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="block">
-                    <div class="imgBox">
-                        {/* <img src={profileImg} class="cover" alt=""/> */}
-                    </div>
-                    <div class="details">
-                        <div class="listHead">
-                            <h4>Dian</h4>
-                            <p class="time">15/01/2022</p>
-                        </div>
-                        <div class="message_p">
-                            <p>Token No:</p>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </div>
-        <div class="rightSide">
-            <div class="header">
-                <div class="imgText">
-                    <div class="userimg">
-                        {/* <img src={profileImg} alt="" class="cover"/> */}
-                    </div>
-                    <h4>Qazi <br/><span>online</span></h4>
-                </div>
-                <ul class="nav_icons">
-                    <li>
-                        <ion-icon name="search-outline"></ion-icon>
-                    </li>
-                    <li>
-                        <ion-icon name="ellipsis-vertical"></ion-icon>
-                    </li>
-                </ul>
-            </div>
-
-            {/* <!-- CHAT-BOX --> */}
-            <div class="chatbox">
-                <div class="message my_msg">
-                    <p>Hi <br/><span>12:18</span></p>
-                </div>
-                <div class="message friend_msg">
-                    <p>Hey <br/><span>12:18</span></p>
-                </div>
-                <div class="message my_msg">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. <br/><span>12:15</span></p>
-                </div>
-                <div class="message friend_msg">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. <br/><span>12:15</span></p>
-                </div>
-                <div class="message my_msg">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Lorem ipsum dolor sit amet consectetur
-                        adipisicing elit. Eaque aliquid fugiat accusamus dolore qui vitae ratione optio sunt
-                        <br/><span>12:15</span></p>
-                </div>
-                <div class="message friend_msg">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. <br/><span>12:15</span></p>
-                </div>
-                <div class="message my_msg">
-                    <p>Lorem ipsum dolor sit amet consectetur <br/><span>12:15</span></p>
-                </div>
-                <div class="message friend_msg">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.<br/><span>12:15</span></p>
-                </div>
-                <div class="message my_msg">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.<br/><span>12:15</span></p>
-                </div>
-                <div class="message friend_msg">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.<br/><span>12:15</span></p>
-                </div>
-                <div class="message my_msg">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.<br/><span>12:15</span></p>
-                </div>
-                <div class="message friend_msg">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.<br/><span>12:15</span></p>
-                </div>
-                <div class="message my_msg">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.<br/><span>12:15</span></p>
-                </div>
-                <div class="message friend_msg">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.<br/><span>12:15</span></p>
-                </div>
-                <div class="message my_msg">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.<br/><span>12:15</span></p>
-                </div>
-                <div class="message friend_msg">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.<br/><span>12:15</span></p>
-                </div>
-            </div>
-
-            {/* <!-- CHAT INPUT --> */}
-            <div class="chat_input">
-                <ion-icon name="happy-outline"></ion-icon>
-                {/* <!-- <ion-icon name="happy-outline"></ion-icon> --> */}
-                <button type="attach_button"> <AttachFileIcon /> </button>
-                <input type="text" placeholder="Type a message"/>
-                <button type="send_button"> <SendIcon /> </button>
-            </div>
-          
-                 
-        </div>
-    </div>
     )
-} 
+}
 
 export default Middle
