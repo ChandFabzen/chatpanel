@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import "./App.css";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { signOut } from "firebase/auth";
-import { onAuthStateChanged } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from "firebase/auth";
 import { auth } from '../src/services/firebase'
 import Nav from "./components/header";
-
 import Middle from "./components/middleComponent";
 import { BrowserRouter } from "react-router-dom";
 import Login from "./components/login";
@@ -102,11 +103,11 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-          {
-            user?(<>
-            <ChatBox/>
-            </>):(
-              <><Login
+        {
+          user ? (<>
+            <ChatBox />
+          </>) : (
+            <><Login
               email={email}
               setEmail={setEmail}
               password={password}
@@ -117,8 +118,8 @@ function App() {
               setHasAccount={setHasAccount}
               emailError={emailError}
               passwordError={passwordError} />
-              </>)
-          }
+            </>)
+        }
       </BrowserRouter>
     </div>
   );

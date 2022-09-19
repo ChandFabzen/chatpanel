@@ -1,33 +1,75 @@
 import React, { useState } from "react";
 import '../components/middle.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEllipsisVertical, faSearch, faPaperclip, faFaceSmile, faPaperPlane,faSadCry } from '@fortawesome/free-solid-svg-icons'
+import { faEllipsisVertical, faSearch, faPaperclip, faFaceSmile, faPaperPlane, faSadCry } from '@fortawesome/free-solid-svg-icons'
 import { db } from "../services/firebase";
-import { get, query, onValue } from "firebase/database"
+import { ref, child, get } from "firebase/database"
+
+
 
 
 
 const Middle = () => {
 
-    // Search Chat
-    const [userName , setUserName] = useState('')
-    const [user , setUser] = useState(null)
-    const [err , setErr] = useState(false)
 
-    const handleSearch = async ()=>{
-        let result = await fetch('https://fir-realtimemessaging-17af2-default-rtdb.firebaseio.com/',{
-            method:"get",
-            headers:{
-                'Content-Type':'application/json'
+    //Start Search Chat
+    const [userName, setUserName] = useState('')
+    const [user, setUser] = useState(null)
+    const [err, setErr] = useState(false)
+    const [userId, setUserId] = useState('')
+
+    // const { currentUser } = useContext(AuthContext);
+
+    const handleSearch = () => {
+        const dbRef = ref(db);
+        get(child(dbRef, userName)).then((snapshot) => {
+            if (snapshot.exists()) {
+                //    const userNameTest =  (/^[A-Za-z0-9\!\@\#\$\%\^\&\*\)\(+\=\._-]+$/g).test(userName)
+                //    if(userNameTest){
+                //     setErr(true)
+                //    }
+                let data = snapshot.val()
+                const formattedTasks = [];
+
+                const tasks = Object.values(data);
+
+                tasks.forEach(task =>
+                    Object.entries(task).forEach(([key, value]) =>
+                        formattedTasks.push({ name: key, data: value })
+                    )
+                );
+                setUser(formattedTasks)
+                setUserId(userName)
+                setErr(false)
+                console.log(user)
+            } else {
+                setErr(true)
             }
+        }).catch((error) => {
+            console.log(error)
+            setErr(true);
         });
-      console.log(result)
+        console.log(user)
     }
 
-    const handleKey = e=>{
+
+
+
+    const handleKey = e => {
         e.code === 'Enter' && handleSearch()
     }
 
+    const handleSelect = () => {
+        setUser(null)
+        setUserName("")
+    }
+
+    // end Search chat
+
+
+    // start chat fetch
+
+    // end chat fetch
     return (
         <div className="container">
             <div className="leftSide">
@@ -48,7 +90,7 @@ const Middle = () => {
                 {/* <!-- Search Chat --> */}
                 <div className="search_chat">
                     <div>
-                        <input type="text" placeholder="Search or start new chat" onKeyDown={handleKey} onChange={e=>setUserName(e.target.value)}/>
+                        <input type="text" placeholder="Search or start new chat" onChange={e => setUserName(e.target.value)} onKeyDown={handleKey} value={userName} />
                         <FontAwesomeIcon icon={faSearch} />
                     </div>
                 </div>
@@ -57,20 +99,22 @@ const Middle = () => {
 
                 {/* <!-- CHAT LIST --> */}
                 <div className="chatlist">
-                    <div className="block active">
+                    {err && (<span>User not found!</span>)}
+                    {user && (<div className="block active" onClick={handleSelect}>
                         <div className="imgBox">
                             <img src={require('../image/img1.jpg')} alt="" className="cover" />
+                            {/* <span>{currentUser.uid}</span> */}
                         </div>
                         <div className="details">
                             <div className="listHead">
-                                <h4>Jhon Doe</h4>
-                                <p className="time">10:56</p>
+                                <h4>{userId}</h4>
+                                <p className="time">{user[user.length - 1].data.dateAndTime}</p>
                             </div>
                             <div className="message_p">
-                                <p>Token No:</p>
+                                <p>{user[user.length - 1].data.message}</p>
                             </div>
                         </div>
-                    </div>
+                    </div>)}
 
                     <div className="block unread">
                         <div className="imgBox">
@@ -237,7 +281,9 @@ const Middle = () => {
                         <div className="userimg">
                             <img src={require('../image/img6.jpg')} alt="" className="cover" />
                         </div>
-                        <h4>Qazi <br /><span>online</span></h4>
+                        <h4>Jhon<br />
+                            {/* <span>online</span> */}
+                        </h4>
                     </div>
                     <ul className="nav_icons">
                         <li>
