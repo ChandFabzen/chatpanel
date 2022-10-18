@@ -343,6 +343,7 @@
 
 
   span.videoTime {
+    height: 10px;
     display: block;
     position: relative;
     padding: 10px;
@@ -354,6 +355,7 @@
   }
 
   span.imgTime {
+    height: 10px;
     display: block;
     position: relative;
     padding: 10px;

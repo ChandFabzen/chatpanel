@@ -3,7 +3,7 @@ import '../components/middle.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEllipsisVertical, faSearch, faPaperPlane, faVideo, faImage, faRotateForward } from '@fortawesome/free-solid-svg-icons'
 import { db, auth, storage } from "../services/firebase";
-import { ref, onValue, push, set, update, query } from "firebase/database"
+import { ref, onValue, push, set, update, query, get, child } from "firebase/database"
 // import{ ref} from "firebase/storage";
 
 import {
@@ -35,7 +35,7 @@ const Middle = () => {
 
 
     //right side chatbox msg
-    const [userMsg, setUserMsg] = useState('')
+    const [userMsgs, setUserMsg] = useState("")
 
     // send msg
     const [text, setText] = useState('')
@@ -52,7 +52,7 @@ const Middle = () => {
 
     const [active, setActive] = useState(false)
 
-    const [progress , setProgress] = useState(0)
+    const [progress, setProgress] = useState(0)
 
 
     const handleStatusOptions = () => {
@@ -73,12 +73,13 @@ const Middle = () => {
             }
         })
     }
-    useEffect(() => {
-        authListener()
-    })
+
+
+
+
+
 
     const handleSearch = () => {
-
 
         const starCountRef = ref(db, userName);
         onValue(starCountRef, (snapshot) => {
@@ -119,6 +120,7 @@ const Middle = () => {
         u && handleChat(u)
         setUser(null)
         setUserName("")
+
     }
 
     // end Search chat
@@ -126,21 +128,30 @@ const Middle = () => {
 
     // start left chat fetch
     useEffect(() => {
-        console.clear()
-        const starCountRef = ref(db);
-        onValue(starCountRef, (snapshot) => {
-            const data = snapshot.val();
-            setChats(data)
+        try {
 
-        });
+            const starCountRef = ref(db);
+            onValue(starCountRef, (snapshot) => {
+                const data = snapshot.val();
+
+                // console.log(data.sort((a, b) => (Object.values(Object.values(b[1])[0]).pop().Response.dateAndTimeStamp) - (Object.values(Object.values(a[1])[0]).pop().Response.dateAndTimeStamp)))
+
+                setChats(data)
+                // userMsgs(data)
+                // console.log(Object.keys(data).length)
+            });
+        } catch (error) {
+            window.location.reload();
+        }
+
 
     }, [])
 
     // Open left chat fetch
     const fiterChatHandel = (e) => {
         e.preventDefault();
-        console.log(chats)
-        console.log(e.target.value)
+
+
         const starCountRef = ref(db);
         onValue(starCountRef, (snapshot) => {
             const chatss = snapshot.val();
@@ -183,33 +194,29 @@ const Middle = () => {
 
     // start right chat
     const handleChat = (u) => {
-        setChatUserName(u)
-
-        const starCountRef = ref(db, u);
+        let user = {}
+        const userId = u
+        console.log(u)
+        const starCountRef = ref(db, u + "/Messages");
         onValue(starCountRef, (snapshot) => {
             const data = snapshot.val();
-            setUserMsg(data.Messages)
-            //    console.log(userMsg)
+            console.log(data)
+            console.log(userId)
+            setUserMsg(data)
+            //             user[`${u}`]=data
+            //             console.log(Object.keys(user)[0])
+            //             console.log(u)
+            //             if(Object.keys(user)[0]===u){
+            // console.log("hi")
+            //             }
+
+
         });
 
+        //    setUserMsg(chats[u].Messages)
+        // setUserMsg(user)
 
-        // update notification
-
-        const starCountRefs = ref(db, `${u}/UserChatData`);
-        onValue(starCountRefs, (snapshot) => {
-            const data = snapshot.val();
-            const postData = {
-                chatStatus: data.chatStatus,
-                phoneNumber: data.phoneNumber,
-                userid: data.userid,
-                username: data.username,
-                messageCountUpdate: 0
-            };
-            const updates = {};
-            updates[`${u}/UserChatData`] = postData;
-            update(ref(db), updates)
-
-        });
+        setChatUserName(u)
 
     }
 
@@ -226,7 +233,7 @@ const Middle = () => {
     }
 
     const handleSendText = () => {
-        let userinfo = Object.entries(userMsg)
+        let userinfo = Object.entries(userMsgs)
         let lastMsgFullDate = userinfo[userinfo.length - 1][1].Response.dateAndTime
         let lastMsgDate = lastMsgFullDate.split(" ")[0].split("-")[0]
         let newDate = new Date()
@@ -271,7 +278,7 @@ const Middle = () => {
     }
 
     const handleSendimg = (img) => {
-        let userinfo = Object.entries(userMsg)
+        let userinfo = Object.entries(userMsgs)
         let lastMsgFullDate = userinfo[userinfo.length - 1][1].Response.dateAndTime
         let lastMsgDate = lastMsgFullDate.split(" ")[0].split("-")[0]
         let newDate = new Date()
@@ -288,7 +295,7 @@ const Middle = () => {
         uploadTask.on('state_changed',
             (snapshot) => {
                 const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                  setProgress(progress)
+                setProgress(progress)
                 switch (snapshot.state) {
                     case 'paused':
                         alert('Upload is paused');
@@ -336,13 +343,13 @@ const Middle = () => {
             }
         );
 
-       
+
 
     }
 
 
     const handleSendvideo = (video) => {
-        let userinfo = Object.entries(userMsg)
+        let userinfo = Object.entries(userMsgs)
         let lastMsgFullDate = userinfo[userinfo.length - 1][1].Response.dateAndTime
         let lastMsgDate = lastMsgFullDate.split(" ")[0].split("-")[0]
         let newDate = new Date()
@@ -407,7 +414,7 @@ const Middle = () => {
             }
         );
 
-      
+
 
     }
 
@@ -438,10 +445,12 @@ const Middle = () => {
         return
     }
 
-
     useEffect(() => {
+        authListener()
         messageEndRef.current.scrollIntoView()
-    }, [userMsg]);
+        console.clear()
+    }, [userMsgs]);
+
     //end sending chat and image
 
 
@@ -514,42 +523,66 @@ const Middle = () => {
                                 Close
                             </button>
                         </div>
-                        {Object.entries(chats).sort((a, b) => (Object.values(Object.values(b[1])[0]).pop().Response.dateAndTimeStamp) - (Object.values(Object.values(a[1])[0]).pop().Response.dateAndTimeStamp)).map((chat) => (<>
+                        <>
+                          {
+                            Object.entries(chats).map((chat)=>{
+                                
+                                console.log(chat[1].Messages)
+                            })
+                          }
+                            {Object.entries(chats).sort((a, b) =>Object.entries(b[1].Messages).pop()[1].Response.dateAndTimeStamp -Object.entries(a[1].Messages).pop()[1].Response.dateAndTimeStamp).map((chat) => (<>
 
-                            <div className="block" key={chat[0]} onClick={() => handleChat(chat[0])}>
+                                <div className="block" key={chat[0]} onClick={() => setUserMsg(chat[1].Messages)} >
 
-                                <div className="imgBox" >
-                                    <img src={require('../image/img5.jpg')} alt="" className="cover" />
-                                </div>
-                                <div className="details" >
-                                    <div className="listHead" >
-                                        <h4>{chat[0]}</h4>
-                                        <p className="time" key={chat[1]}>{Object.values(Object.values(chat[1])[0]).pop().Response.dateAndTime}</p>
+                                    <div className="imgBox" >
+                                        <img src={require('../image/img5.jpg')} alt="" className="cover" />
                                     </div>
+                                    <div className="details" >
+                                        <div className="listHead" >
+                                            <h4>{chat[0]}</h4>
+                                            <p className="time" key={chat[1]}>{Object.values(Object.values(chat[1])[0]).pop().Response.dateAndTime}</p>
+                                        </div>
 
 
-                                    {Object.values(Object.values(chat[1])[0]).pop().Response.hasVideo || Object.values(Object.values(chat[1])[0]).pop().Response.hasImage ?
-                                        (Object.values(Object.values(chat[1])[0]).pop().Response.hasVideo ?
-                                            (<div className="message_p">
-                                                <p>Video</p>
-                                                {
-                                                    Object.values(Object.values(chat[1])[1])[0] <= 2 ?
-                                                        Object.values(Object.values(chat[1])[1])[0] === 0 || Object.values(Object.values(chat[1])[1])[0] === 1 ?
-                                                            Object.values(Object.values(chat[1])[1])[0] === 0 ?
-                                                                (<><><b style={{ backgroundColor: "green" }}>Open</b>{Object.values(Object.values(chat[1])[1])[1] > 0 ? (<><b>{Object.values(Object.values(chat[1])[1])[1]}</b></>) : (<></>)}</></>)
+                                        {Object.values(Object.values(chat[1])[0]).pop().Response.hasVideo || Object.values(Object.values(chat[1])[0]).pop().Response.hasImage ?
+                                            (Object.values(Object.values(chat[1])[0]).pop().Response.hasVideo ?
+                                                (<div className="message_p">
+                                                    <p>Video</p>
+                                                    {
+                                                        Object.values(Object.values(chat[1])[1])[0] <= 2 ?
+                                                            Object.values(Object.values(chat[1])[1])[0] === 0 || Object.values(Object.values(chat[1])[1])[0] === 1 ?
+                                                                Object.values(Object.values(chat[1])[1])[0] === 0 ?
+                                                                    (<><><b style={{ backgroundColor: "green" }}>Open</b>{Object.values(Object.values(chat[1])[1])[1] > 0 ? (<><b>{Object.values(Object.values(chat[1])[1])[1]}</b></>) : (<></>)}</></>)
+                                                                    :
+                                                                    (<><><b style={{ backgroundColor: "yellow" }}>Pending</b>{Object.values(Object.values(chat[1])[1])[1] > 0 ? (<><b>{Object.values(Object.values(chat[1])[1])[1]}</b></>) : (<></>)}</></>)
+
                                                                 :
-                                                                (<><><b style={{ backgroundColor: "yellow" }}>Pending</b>{Object.values(Object.values(chat[1])[1])[1] > 0 ? (<><b>{Object.values(Object.values(chat[1])[1])[1]}</b></>) : (<></>)}</></>)
-
+                                                                (<><b style={{ backgroundColor: "red" }}>Close</b>{Object.values(Object.values(chat[1])[1])[1] > 0 ? (<><b>{Object.values(Object.values(chat[1])[1])[1]}</b></>) : (<></>)}</>)
                                                             :
-                                                            (<><b style={{ backgroundColor: "red" }}>Close</b>{Object.values(Object.values(chat[1])[1])[1] > 0 ? (<><b>{Object.values(Object.values(chat[1])[1])[1]}</b></>) : (<></>)}</>)
-                                                        :
-                                                        (<><b style={{ backgroundColor: "brown" }}>Mute</b>{Object.values(Object.values(chat[1])[1])[1] > 0 ? (<><b>{Object.values(Object.values(chat[1])[1])[1]}</b></>) : (<></>)}</>)
-                                                }
+                                                            (<><b style={{ backgroundColor: "brown" }}>Mute</b>{Object.values(Object.values(chat[1])[1])[1] > 0 ? (<><b>{Object.values(Object.values(chat[1])[1])[1]}</b></>) : (<></>)}</>)
+                                                    }
 
-                                            </div>)
+                                                </div>)
+                                                :
+                                                (<div className="message_p">
+                                                    <p>Image</p>
+                                                    {
+                                                        Object.values(Object.values(chat[1])[1])[0] <= 2 ?
+                                                            Object.values(Object.values(chat[1])[1])[0] === 0 || Object.values(Object.values(chat[1])[1])[0] === 1 ?
+                                                                Object.values(Object.values(chat[1])[1])[0] === 0 ?
+                                                                    (<><><b style={{ backgroundColor: "green" }}>Open</b>{Object.values(Object.values(chat[1])[1])[1] > 0 ? (<><b>{Object.values(Object.values(chat[1])[1])[1]}</b></>) : (<></>)}</></>)
+                                                                    :
+                                                                    (<><><b style={{ backgroundColor: "yellow" }}>Pending</b>{Object.values(Object.values(chat[1])[1])[1] > 0 ? (<><b>{Object.values(Object.values(chat[1])[1])[1]}</b></>) : (<></>)}</></>)
+
+                                                                :
+                                                                (<><b style={{ backgroundColor: "red" }}>Close</b>{Object.values(Object.values(chat[1])[1])[1] > 0 ? (<><b>{Object.values(Object.values(chat[1])[1])[1]}</b></>) : (<></>)}</>)
+                                                            :
+                                                            (<><b style={{ backgroundColor: "brown" }}>Mute</b>{Object.values(Object.values(chat[1])[1])[1] > 0 ? (<><b>{Object.values(Object.values(chat[1])[1])[1]}</b></>) : (<></>)}</>)
+                                                    }
+                                                </div>))
                                             :
                                             (<div className="message_p">
-                                                <p>Image</p>
+                                                <p>{Object.values(Object.values(chat[1])[0]).pop().Response.message}</p>
                                                 {
                                                     Object.values(Object.values(chat[1])[1])[0] <= 2 ?
                                                         Object.values(Object.values(chat[1])[1])[0] === 0 || Object.values(Object.values(chat[1])[1])[0] === 1 ?
@@ -563,28 +596,12 @@ const Middle = () => {
                                                         :
                                                         (<><b style={{ backgroundColor: "brown" }}>Mute</b>{Object.values(Object.values(chat[1])[1])[1] > 0 ? (<><b>{Object.values(Object.values(chat[1])[1])[1]}</b></>) : (<></>)}</>)
                                                 }
-                                            </div>))
-                                        :
-                                        (<div className="message_p">
-                                            <p>{Object.values(Object.values(chat[1])[0]).pop().Response.message}</p>
-                                            {
-                                                Object.values(Object.values(chat[1])[1])[0] <= 2 ?
-                                                    Object.values(Object.values(chat[1])[1])[0] === 0 || Object.values(Object.values(chat[1])[1])[0] === 1 ?
-                                                        Object.values(Object.values(chat[1])[1])[0] === 0 ?
-                                                            (<><><b style={{ backgroundColor: "green" }}>Open</b>{Object.values(Object.values(chat[1])[1])[1] > 0 ? (<><b>{Object.values(Object.values(chat[1])[1])[1]}</b></>) : (<></>)}</></>)
-                                                            :
-                                                            (<><><b style={{ backgroundColor: "yellow" }}>Pending</b>{Object.values(Object.values(chat[1])[1])[1] > 0 ? (<><b>{Object.values(Object.values(chat[1])[1])[1]}</b></>) : (<></>)}</></>)
-
-                                                        :
-                                                        (<><b style={{ backgroundColor: "red" }}>Close</b>{Object.values(Object.values(chat[1])[1])[1] > 0 ? (<><b>{Object.values(Object.values(chat[1])[1])[1]}</b></>) : (<></>)}</>)
-                                                    :
-                                                    (<><b style={{ backgroundColor: "brown" }}>Mute</b>{Object.values(Object.values(chat[1])[1])[1] > 0 ? (<><b>{Object.values(Object.values(chat[1])[1])[1]}</b></>) : (<></>)}</>)
-                                            }
-                                        </div>)}
+                                            </div>)}
+                                    </div>
                                 </div>
-                            </div>
+                            </>
+                            ))}
                         </>
-                        ))}
                     </>
 
                     {/* 
@@ -730,7 +747,7 @@ const Middle = () => {
                                 <img src={require('../image/img6.jpg')} alt="" className="cover" />
                             </div>
                             <h4>{chatUserName}<br />
-                                {/* <span>online</span> */}
+                                <span>online</span>
                             </h4>
                         </div>
 
@@ -768,11 +785,12 @@ const Middle = () => {
                             <h1>Please Select An User To Chat</h1>
                         </div>
                     </>)}
-                    
-                    <>
-                        {Object.entries(userMsg).map((userMsg) => (
 
-                            userMsg[1].Response.responseType === 1 ?
+                    <>
+
+                        {Object.entries(userMsgs).map((userMsg) => (
+                            //    userMsg[1].Response.hasDate===true ? (<span className="newDayDate">{userMsg[1].Response.dateAndTime.split(' ')[0]}</span>) : (<></>) &&
+                            (userMsg[1].Response.responseType === 1 ?
                                 (<>
                                     <div className="message my_msg">
 
@@ -806,12 +824,14 @@ const Middle = () => {
                                             (<><p>{userMsg[1].Response.message}<br /><span>{userMsg[1].Response.dateAndTime.split(' ')[1]}</span></p></>)}
 
                                     </div>
-                                </>)
+                                </>))
 
                         ))}
-                    </>
 
+                    </>
                     <div ref={messageEndRef} />
+
+
                     {/* 
                     <div className="message my_msg">
                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. <br /><span>12:15</span></p>
@@ -869,13 +889,13 @@ const Middle = () => {
                     {chatUserName.trim().length !== 0 && (<>
                         <input type='file' accept="image/png, image/jpg, image/jpeg" id="image" style={{ display: "none" }} onChange={e => handleSendimg(e.target.files[0])} />
                         <label htmlFor="image">
-                           {progress>0?<h4>{`${progress}%`}</h4>:<></>} 
+                            {progress > 0 ? <h4>{`${progress}`}</h4> : <></>}
                             <FontAwesomeIcon icon={faImage} />
                         </label>
 
                         <input type='file' id="video" accept="video/mp4,video/x-m4v,video/*" style={{ display: "none" }} onChange={e => handleSendvideo(e.target.files[0])} />
                         <label htmlFor="video" >
-                        
+
                             <FontAwesomeIcon icon={faVideo} />
                         </label>
 
@@ -903,5 +923,11 @@ export default Middle
 
 
 
-
+// const postData = {
+//     chatStatus: data.chatStatus,
+//     phoneNumber: data.phoneNumber,
+//     userid: data.userid,
+//     username: data.username,
+//     messageCountUpdate: 0
+// };
 
